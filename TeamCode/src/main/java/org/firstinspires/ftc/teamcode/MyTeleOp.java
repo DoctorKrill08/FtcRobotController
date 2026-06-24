@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
+import org.firstinspires.ftc.teamcode.Subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
 @TeleOp
@@ -17,6 +18,8 @@ public class MyTeleOp extends LinearOpMode {
         drivetrain.initiate(hardwareMap);
         Intake intake = new Intake();
         intake.initiate(hardwareMap);
+        Flywheel flywheel = new Flywheel();
+        flywheel.initiate(hardwareMap);
         waitForStart();
 
         if (isStopRequested()) return;
@@ -48,11 +51,20 @@ public class MyTeleOp extends LinearOpMode {
                 }
             }
 
+            if (gamepad1.triangle){
+                switch (flywheel.getState()){
+                    case OFF:
+                        flywheel.setState(Flywheel.State.ON);
+                        break;
+                    default:
+                        flywheel.setState(Flywheel.State.OFF);
+                        break;
+                }
+            }
+
             drivetrain.run(x,y,rx);
             intake.update();
-
-
-
+            flywheel.update();
         }
     }
 }
