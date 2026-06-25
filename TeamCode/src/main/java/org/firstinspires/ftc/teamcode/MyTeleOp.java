@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.Subsystems.Gate;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
 @TeleOp
@@ -20,6 +21,8 @@ public class MyTeleOp extends LinearOpMode {
         intake.initiate(hardwareMap);
         Flywheel flywheel = new Flywheel();
         flywheel.initiate(hardwareMap);
+        Gate gate = new Gate();
+        gate.initiate(hardwareMap);
         waitForStart();
 
         if (isStopRequested()) return;
@@ -29,7 +32,7 @@ public class MyTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
 
-            if (gamepad1.circleWasPressed()){
+            if (gamepad1.leftTriggerWasPressed()){
                 switch (intake.getState()){
                     case RESTING:
                         intake.setState(Intake.State.INTAKING);
@@ -51,20 +54,26 @@ public class MyTeleOp extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.triangle){
+            if (gamepad1.rightTriggerWasPressed()){
                 switch (flywheel.getState()){
                     case OFF:
                         flywheel.setState(Flywheel.State.ON);
                         break;
                     default:
-                        flywheel.setState(Flywheel.State.OFF);
+                        gate.shoot();
+                        intake.setState(Intake.State.INTAKING);
                         break;
                 }
+            }
+            if (gamepad1.leftBumperWasPressed()){
+                intake.setState(Intake.State.RESTING);
+                flywheel.setState(Flywheel.State.OFF);
             }
 
             drivetrain.run(x,y,rx);
             intake.update();
             flywheel.update();
+            gate.update();
         }
     }
 }
